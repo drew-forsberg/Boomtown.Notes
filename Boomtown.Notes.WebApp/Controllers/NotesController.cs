@@ -27,15 +27,14 @@ namespace Boomtown.Notes.WebApp.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<NoteDto> Get()
+        public async Task<IEnumerable<NoteDto>> GetAsync()
         {
             try
             {
                 // Use the Note repository to get notes from database
-                var notes = _noteRepository.GetNotes();
+                var notes = await _noteRepository.GetNotesAsync();
 
                 // Convert the results to a simplified format for display purposes
-                // The conversion is too complex for AutoMapper
                 var displayNotes = notes.Select(note => _mapper.Map<NoteDto>(note));
 
                 return displayNotes;
@@ -47,12 +46,31 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
+        public async Task<NoteDto> GetAsync(int id)
+        {
+            try
+            {
+                // Use the Note repository to get notes from database
+                var note = await _noteRepository.GetNote(id);
+
+                // Convert the results to a simplified format for display purposes
+                var displayNote = _mapper.Map<NoteDto>(note);
+
+                return displayNote;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Could not retrieve note (ID = ${id}) from database");
+                throw;
+            }
+        }
+
         [HttpPost]
-        public async Task Post(NoteDto noteDto)
+        public async Task<StatusCodeResult> PostAsync(NoteDto noteDto)
         {
             if (noteDto == null)
             {
-                throw new ArgumentNullException(nameof(noteDto));
+                return BadRequest();
             }
 
             try
@@ -60,12 +78,63 @@ namespace Boomtown.Notes.WebApp.Controllers
                 // Convert the note DTO to the DB entity
                 var noteEntity = _mapper.Map<Note>(noteDto);
 
-                // Create or update the property, depending on whether it has already been saved by the user
-                await _noteRepository.CreateOrUpdate(noteEntity);
+                // Create the note in the DB
+                await _noteRepository.Create(noteEntity);
+
+                return Ok();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be saved to the DB");
+                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be saved to the database");
+                throw;
+            }
+        }
+
+        [HttpPut]
+        public async Task<StatusCodeResult> PutAsync(NoteDto noteDto)
+        {
+            if (noteDto == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                // Convert the note DTO to the DB entity
+                var noteEntity = _mapper.Map<Note>(noteDto);
+
+                // Update the note in the DB
+                await _noteRepository.Update(noteEntity);
+
+                return Ok ();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be saved to the database");
+                throw;
+            }
+        }
+
+        [HttpDelete]
+        public async Task<StatusCodeResult> DeleteAsync(int id)
+        {
+            try
+            {
+                var note = await _noteRepository.GetNote(id);
+
+                if (note == null)
+                {
+                    return NotFound();
+                }
+
+                // Update the note in the DB
+                await _noteRepository.DeleteNote(note);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Note (ID = {id}) could not be deleted from the database");
                 throw;
             }
         }

@@ -21,6 +21,6 @@ namespace Boomtown.Notes.WebApp.Dtos
         public DateTimeOffset DateCreated { get; set; }
 
         [JsonPropertyName("updated")]
-        public DateTimeOffset DateUpdated { get; set; }
+        public DateTimeOffset? DateUpdated { get; set; }
     }
 }
