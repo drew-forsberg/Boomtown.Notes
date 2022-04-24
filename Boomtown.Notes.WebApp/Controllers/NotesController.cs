@@ -46,6 +46,7 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
+        [HttpGet("{id}")]
         public async Task<NoteDto> GetAsync(int id)
         {
             try
@@ -66,7 +67,7 @@ namespace Boomtown.Notes.WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<StatusCodeResult> PostAsync(NoteDto noteDto)
+        public async Task<StatusCodeResult> PostAsync([FromBody] NoteDto noteDto)
         {
             if (noteDto == null)
             {
@@ -90,8 +91,8 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<StatusCodeResult> PutAsync(NoteDto noteDto)
+        [HttpPut("{id}")]
+        public async Task<StatusCodeResult> PutAsync(int id, [FromBody] NoteDto noteDto)
         {
             if (noteDto == null)
             {
@@ -115,7 +116,7 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<StatusCodeResult> DeleteAsync(int id)
         {
             try

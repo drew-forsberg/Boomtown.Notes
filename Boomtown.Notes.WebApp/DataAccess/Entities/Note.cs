@@ -8,7 +8,7 @@ namespace Boomtown.Notes.WebApp.DataAccess.Entities
     /// </summary>
     public class Note
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; }
         public string Contents { get; set; }
