@@ -6,7 +6,10 @@ namespace Boomtown.Notes.WebApp.DataAccess.Repositories
 {
     public interface INoteRepository
     {
-        Task CreateOrUpdate(Note note);
-        List<Note> GetNotes();
+        Task Create(Note note);
+        Task Update(Note note);
+        Task<List<Note>> GetNotesAsync();
+        Task<Note> GetNote(int id);
+        Task DeleteNote(Note note);
     }
 }

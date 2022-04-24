@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Boomtown.Notes.WebApp.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Boomtown.Notes.WebApp.DataAccess.Repositories
 {
@@ -17,33 +18,51 @@ namespace Boomtown.Notes.WebApp.DataAccess.Repositories
             _noteContext = noteContext;
         }
 
-        public async Task CreateOrUpdate(Note note)
+        public async Task Create(Note note)
+        {
+            note.DateCreated = DateTimeOffset.UtcNow;
+
+            _noteContext.Notes.Add(note);
+
+            await _noteContext.SaveChangesAsync();
+        }
+
+        public async Task Update(Note note)
         {
             var existingNote = await _noteContext.Notes.FindAsync(note.Id);
 
             if (existingNote == null)
             {
-                note.DateCreated = DateTimeOffset.UtcNow;
-
-                _noteContext.Notes.Add(note);
+                throw new Exception($"Note (ID = ${note.Id} not found");
             }
-            else
-            {
-                existingNote.Name = note.Name;
-                existingNote.Contents = note.Contents;
-                existingNote.DateUpdated = DateTimeOffset.UtcNow;
 
-                _noteContext.Notes.Update(existingNote);
-            }
+            existingNote.Name = note.Name;
+            existingNote.Contents = note.Contents;
+            existingNote.DateUpdated = DateTimeOffset.UtcNow;
+
+            _noteContext.Notes.Update(existingNote);
 
             await _noteContext.SaveChangesAsync();
         }
 
-        public List<Note> GetNotes()
+        public async Task<Note> GetNote(int id)
         {
-            var notes = _noteContext.Notes.ToList();
+            var note = await _noteContext.Notes.FindAsync(id);
+            return note;
+        }
+
+        public async Task<List<Note>> GetNotesAsync()
+        {
+            var notes = await _noteContext.Notes.ToListAsync();
             
             return notes;
+        }
+
+        public async Task DeleteNote(Note note)
+        {
+            _noteContext.Notes.Remove(note);
+
+            await _noteContext.SaveChangesAsync();
         }
     }
 }
