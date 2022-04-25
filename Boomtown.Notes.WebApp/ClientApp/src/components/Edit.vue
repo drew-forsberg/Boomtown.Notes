@@ -9,7 +9,7 @@
                 </div>
                 <div class="form-group">
                     <label for="editContents">Contents</label>
-                    <input id="editContents" type="text" class="form-control" v-model="note.contents" />
+                    <textarea id="editContents" class="form-control" v-model="note.contents" maxlength="1000" rows="10" /> 
                 </div>
                 <button id="editSave" @click="saveEdit()" class="btn btn-primary btn-sm mr-1">Save</button>
                 <button id="editCancel" @click="cancelEdit()" class="btn btn-primary btn-sm">Cancel</button>

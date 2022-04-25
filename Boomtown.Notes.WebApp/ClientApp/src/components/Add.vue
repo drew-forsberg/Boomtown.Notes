@@ -4,12 +4,12 @@
             <h1>Add Note</h1>
             <fieldset>
                 <div class="form-group">
-                    <label for="editName">Name</label>
-                    <input id="editName" type="text" class="form-control" v-model="noteToAdd.name" maxlength="50" />
+                    <label for="addName">Name</label>
+                    <input id="addName" type="text" class="form-control" v-model="note.name" maxlength="50" />
                 </div>
                 <div class="form-group">
-                    <label for="editContents">Contents</label>
-                    <input id="editContents" type="text" class="form-control" v-model="noteToAdd.contents" maxlength="50" />
+                    <label for="addContents">Contents</label>
+                    <textarea id="addContents" class="form-control" v-model="note.contents" maxlength="1000" rows="10" />
                 </div>
                 <button id="addSave" @click="saveAdd()" class="btn btn-primary btn-sm mr-1">Save</button>
                 <button id="addCancel" @click="cancelAdd()" class="btn btn-primary btn-sm">Cancel</button>
@@ -25,7 +25,7 @@
         name: "Add",
         data() {
             return {
-                noteToAdd: {
+                note: {
                     name: '',
                     contents: ''
                 }
@@ -37,7 +37,7 @@
             },
             async saveAdd() {
                 try {
-                    await axios.post('/api/notes', this.noteToAdd);
+                    await axios.post('/api/notes', this.note);
                     this.$router.push({ name: "home" });
                 }
                 catch (error) {
