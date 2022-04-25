@@ -1,4 +1,4 @@
-# Fullstack Coding Exercise by Drew M. Forsberg
+# Boomtown Notes App by Drew M. Forsberg
 
 ## Prerequisites
 The following items must be installed:
