@@ -5,15 +5,15 @@ The following items must be installed:
 
 1. Visual Studio 2022
 2. .NET 6
-3. Node
-4. Vue CLI
+3. npm (https://www.npmjs.com/), which is included with Node.js
+4. Vue CLI (https://cli.vuejs.org/)
 
 ## Project setup
-Use Tools > NuGet Package Manager > Package Manager Console to run the following commands:
 
-1. Install all client side packages by running `npm install`
-2. Create the LocalDB database that the app will use to save property data by running `Update-Database`
-
+1. Using the command line or Powershell, go to the ClientApp directory (your path will vary but should be something like  "..[your source code folder]\Boomtown.Notes\Boomtown.Notes.WebApp\ClientApp")
+2. Install all client side packages by running `npm install`
+3. In Visual Studio 2022, open the Package Manager Console window (Tools > NuGet Package Manager > Package Manager Console)
+4. Run the command `Update-Database` to create the LocalDB database that the app will use to save notes data.
 
 ## Running the project
 
