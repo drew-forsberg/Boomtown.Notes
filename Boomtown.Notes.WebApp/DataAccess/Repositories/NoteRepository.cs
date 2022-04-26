@@ -29,18 +29,9 @@ namespace Boomtown.Notes.WebApp.DataAccess.Repositories
 
         public async Task Update(Note note)
         {
-            var existingNote = await _noteContext.Notes.FindAsync(note.Id);
+            note.DateUpdated = DateTimeOffset.UtcNow;
 
-            if (existingNote == null)
-            {
-                throw new Exception($"Note (ID = ${note.Id} not found");
-            }
-
-            existingNote.Name = note.Name;
-            existingNote.Contents = note.Contents;
-            existingNote.DateUpdated = DateTimeOffset.UtcNow;
-
-            _noteContext.Notes.Update(existingNote);
+            _noteContext.Notes.Update(note);
 
             await _noteContext.SaveChangesAsync();
         }

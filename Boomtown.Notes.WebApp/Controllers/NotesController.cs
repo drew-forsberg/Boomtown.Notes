@@ -11,6 +11,8 @@ using Boomtown.Notes.WebApp.Dtos;
 
 namespace Boomtown.Notes.WebApp.Controllers
 {
+    //TODO: Add guard clause/validation for all action method inputs. Use DataAnnotation attributes on NoteDto to simplify validation.
+
     [ApiController]
     [Route("api/[controller]")]
     public class NotesController : ControllerBase
@@ -21,13 +23,13 @@ namespace Boomtown.Notes.WebApp.Controllers
 
         public NotesController(ILogger<NotesController> logger, INoteRepository noteRepository, IMapper mapper)
         {
-            _logger = logger;
-            _noteRepository = noteRepository;
-            _mapper = mapper;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _noteRepository = noteRepository ?? throw new ArgumentNullException(nameof(noteRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
-        public async Task<IEnumerable<NoteDto>> GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
             try
             {
@@ -37,7 +39,7 @@ namespace Boomtown.Notes.WebApp.Controllers
                 // Convert the results to a simplified format for display purposes
                 var displayNotes = notes.Select(note => _mapper.Map<NoteDto>(note));
 
-                return displayNotes;
+                return Ok(displayNotes);
             }
             catch (Exception e)
             {
@@ -47,17 +49,23 @@ namespace Boomtown.Notes.WebApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<NoteDto> GetAsync(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
                 // Use the Note repository to get notes from database
                 var note = await _noteRepository.GetNote(id);
 
+                // Confirm that the requested ID exists
+                if (note == null)
+                {
+                    return NotFound();
+                }
+
                 // Convert the results to a simplified format for display purposes
                 var displayNote = _mapper.Map<NoteDto>(note);
 
-                return displayNote;
+                return Ok(displayNote);
             }
             catch (Exception e)
             {
@@ -66,8 +74,9 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
+        //TODO: Could use a simplified DTO here since only the Name and Contents fields are required/expected when adding a new note
         [HttpPost]
-        public async Task<StatusCodeResult> PostAsync([FromBody] NoteDto noteDto)
+        public async Task<IActionResult> PostAsync([FromBody] NoteDto noteDto)
         {
             if (noteDto == null)
             {
@@ -86,13 +95,13 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be saved to the database");
+                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be added to the database");
                 throw;
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<StatusCodeResult> PutAsync(int id, [FromBody] NoteDto noteDto)
+        public async Task<IActionResult> PutAsync(int id, [FromBody] NoteDto noteDto)
         {
             if (noteDto == null)
             {
@@ -101,26 +110,38 @@ namespace Boomtown.Notes.WebApp.Controllers
 
             try
             {
+                // Confirm that the requested ID exists
+                var note = await _noteRepository.GetNote(id);
+
+                if (note == null)
+                {
+                    return NotFound();
+                }
+
+                note.Name = noteDto.Name;
+                note.Contents = noteDto.Contents;
+
                 // Convert the note DTO to the DB entity
-                var noteEntity = _mapper.Map<Note>(noteDto);
+                var noteEntity = _mapper.Map<Note>(note);
 
                 // Update the note in the DB
                 await _noteRepository.Update(noteEntity);
 
-                return Ok ();
+                return Ok();
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be saved to the database");
+                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be update in the database");
                 throw;
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<StatusCodeResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
+                // Confirm that the requested ID exists
                 var note = await _noteRepository.GetNote(id);
 
                 if (note == null)
