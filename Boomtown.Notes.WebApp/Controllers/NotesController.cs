@@ -1,13 +1,12 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Boomtown.Notes.WebApp.DataAccess.Entities;
 using Boomtown.Notes.WebApp.DataAccess.Repositories;
 using Boomtown.Notes.WebApp.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Boomtown.Notes.WebApp.Controllers
 {
@@ -48,7 +47,7 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)
         {
             try
@@ -69,7 +68,7 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Could not retrieve note (ID = ${id}) from database");
+                _logger.LogError(e, "Could not retrieve note (ID = ${id}) from database", id);
                 throw;
             }
         }
@@ -95,12 +94,12 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be added to the database");
+                _logger.LogError(e, "Note could not be added to the database");
                 throw;
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] NoteDto noteDto)
         {
             if (noteDto == null)
@@ -131,12 +130,12 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note ID = {noteDto.Id} could not be update in the database");
+                _logger.LogError(e, "Note ID = {id} could not be updated in the database", id);
                 throw;
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             try
@@ -156,7 +155,7 @@ namespace Boomtown.Notes.WebApp.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Note (ID = {id}) could not be deleted from the database");
+                _logger.LogError(e, "Note (ID = {id}) could not be deleted from the database", id);
                 throw;
             }
         }
