@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Boomtown.Notes.WebApp.DataAccess.Entities;
+﻿using Boomtown.Notes.WebApp.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Boomtown.Notes.WebApp.DataAccess.Repositories
 {
@@ -45,7 +44,7 @@ namespace Boomtown.Notes.WebApp.DataAccess.Repositories
         public async Task<List<Note>> GetNotesAsync()
         {
             var notes = await _noteContext.Notes.ToListAsync();
-            
+
             return notes;
         }
 
